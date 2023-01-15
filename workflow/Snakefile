@@ -1,0 +1,19 @@
+include: "rules/common.smk"
+include: "rules/genome_assemblies.smk"
+
+
+rule all:
+    input:
+        expand(
+            "GENOMES/{species}/{assembly_name}/minimap2/{assembly_accession}_{assembly_name}_genomic.mni",
+            zip,
+            species=genomes["Species"],
+            assembly_accession=genomes["Assembly Accession"],
+            assembly_name=genomes["Assembly Name"],
+        ),
+        expand("GENOMES/{species}/{assembly_name}/lastdb/{assembly_accession}_{assembly_name}_genomic.des", zip, species=genomes['Species'],assembly_accession=genomes['Assembly Accession'], assembly_name=genomes['Assembly Name']),
+        expand("GENOMES/{species}/{assembly_name}/blastdb/{assembly_accession}_{assembly_name}_genomic.ndb", zip, species=genomes['Species'],assembly_accession=genomes['Assembly Accession'], assembly_name=genomes['Assembly Name'])
+        #expand("/lustre/home/bolner/data/genomes/{species}/{assembly_name}/blastdb/{assembly_accession}_{assembly_name}_genomic.fna.ndb", zip, species='test',assembly_accession='test', assembly_name='test'),
+        #"/lustre/home/bolner/data/genomes/test/test/lastdb/test_test_genomic.fna.des"
+        #"/lustre/home/bolner/data/genomes/Sus_scrofa/Sscrofa10.2/lastdb/GCF_000003025.5_Sscrofa10.2_genomic.fna.bck",
+        #"/lustre/home/bolner/data/genomes/Sus_scrofa/Sscrofa10.2/blastdb/GCF_000003025.5_Sscrofa10.2_genomic.fna.ndb"
