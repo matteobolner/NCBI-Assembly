@@ -1,3 +1,4 @@
+import os
 import scripts.assembled_genomes_setup.NCBI_Tools as NCBI_Tools
 
 
@@ -30,7 +31,7 @@ rule makeblastdb_assembly:
         species=lambda wc: wc.species,
         assembly_name=lambda wc: wc.assembly_name,
         assembly_accession=lambda wc: wc.assembly_accession,
-        db_name="GENOMES/{species}/{assembly_name}/blastdb/{assembly_accession}_{assembly_name}_genomic.fna",
+        db_name="GENOMES/{species}/{assembly_name}/blastdb/{assembly_accession}_{assembly_name}_genomic",
     shell:
         "zcat {input} | makeblastdb -dbtype nucl -in - -out {params.db_name} -title {params.assembly_name}"
 
@@ -56,7 +57,7 @@ rule lastdb_assembly:
         db_name="GENOMES/{species}/{assembly_name}/lastdb/{assembly_accession}_{assembly_name}_genomic",
     threads: 4
     shell:
-        "zcat {input} | lastdb {params.db_name} -P {threads}"
+        "zcat {input} | lastdb -P {threads} -uNEAR {params.db_name}"
 
 
 rule minimap2_index_assembly:
@@ -66,3 +67,29 @@ rule minimap2_index_assembly:
         "GENOMES/{species}/{assembly_name}/minimap2/{assembly_accession}_{assembly_name}_genomic.mni",
     shell:
         "minimap2 -d {output} {input}"
+
+
+rule last_train_reference_vs_assembly:
+    input:
+        ref_genome_db="GENOMES/Sus_scrofa/Sscrofa11.1/lastdb/GCA_000003025.6_Sscrofa11.1_genomic.prj",
+        other_genome="GENOMES/{other_species}/{other_assembly_name}/ncbi/{other_assembly_accession}_{other_assembly_name}_genomic.fna.gz",
+    output:
+        "GENOMES/Sus_scrofa/Sscrofa11.1/last_train/{other_species}/{other_assembly_name}/GCA_000003025.6_{other_assembly_accession}.train",
+    params:
+        ref_genome_db_name="GENOMES/Sus_scrofa/Sscrofa11.1/lastdb/GCA_000003025.6_Sscrofa11.1_genomic",
+        #ref_species=lambda wc: wc.ref_species,
+        #ref_assembly_name=lambda wc: wc.ref_assembly_name,
+        #ref_assembly_accession=lambda wc: wc.ref_assembly_accession,
+        #ref_genome_db_name="GENOMES/{ref_species}/{ref_assembly_name}/lastdb/{ref_assembly_accession}_{ref_assembly_name}_genomic",
+    shell:
+        "zcat {input.other_genome} | last-train --revsym -E0.05 -C2 {params.ref_genome_db_name} -P 4 > {output}"
+
+rule lastal_assembly_to_reference:
+    input:
+        ref_genome_db="GENOMES/Sus_scrofa/Sscrofa11.1/lastdb/GCA_000003025.6_Sscrofa11.1_genomic.prj",
+        other_genome="GENOMES/{other_species}/{other_assembly_name}/ncbi/{other_assembly_accession}_{other_assembly_name}_genomic.fna.gz",
+        trained_model="GENOMES/Sus_scrofa/Sscrofa11.1/last_train/{other_species}/{other_assembly_name}/GCA_000003025.6_{other_assembly_accession}.train",
+    output:
+        "GENOMES/Sus_scrofa/Sscrofa11.1/lastal/{other_species}/{other_assembly_name}/GCA_000003025.6_{other_assembly_accession}.maf",
+    shell:
+        "zcat {input.other_genome} | lastal -E0.05 -C2 --split-f=MAF+ -p {input.trained_model} {input.other_genome} > {output}"

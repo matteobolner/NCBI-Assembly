@@ -1,6 +1,6 @@
 Genome Abbreviation	Assembly Name	Assembly Accession	Species	Total Sequence Length	Assembly Level	Contig N50	Genome	Origins
-REF11	Sscrofa11.1	GCF_000003025.6	Sus_scrofa	2501895775	Chromosome	48231277	duroc	EU
-REF10	Sscrofa10.2	GCF_000003025.5	Sus_scrofa	2808509378	Chromosome	69503	sscrofa102	EU
+REF11	Sscrofa11.1	GCA_000003025.6	Sus_scrofa	2501895775	Chromosome	48231277	duroc	EU
+REF10	Sscrofa10.2	GCA_000003025.4	Sus_scrofa	2808509378	Chromosome	69503	sscrofa102	EU
 BE	Berkshire_pig_v1	GCA_001700575.1	Sus_scrofa	2434706773	Scaffold	94651	berkshire	EU
 DU	Ninghe_Sus_1	GCA_015776825.1	Sus_scrofa	2458240772	Chromosome	4265198	durocninghe	EU
 HS	Hampshire_pig_v1	GCA_001700165.1	Sus_scrofa	2437109612	Scaffold	102417	hampshire	EU

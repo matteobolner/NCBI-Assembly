@@ -1,1 +1,5 @@
 genomes: config/genomes.tsv
+ref_genomes:
+  Sus_scrofa:
+    assembly_name: Sscrofa11.1
+    assembly_accession: "GCA_000003025.6"
