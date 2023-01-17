@@ -1,6 +1,6 @@
 Genome Abbreviation	Assembly Name	Assembly Accession	Species	Total Sequence Length	Assembly Level	Contig N50	Genome	Origins
-REF11	Sscrofa11.1	GCA_000003025.6	Sus_scrofa	2501895775	Chromosome	48231277	duroc	EU
-REF10	Sscrofa10.2	GCA_000003025.4	Sus_scrofa	2808509378	Chromosome	69503	sscrofa102	EU
+REF11	Sscrofa11.1	GCF_000003025.6	Sus_scrofa	2501895775	Chromosome	48231277	duroc	EU
+REF10	Sscrofa10.2	GCF_000003025.5	Sus_scrofa	2808509378	Chromosome	69503	sscrofa102	EU
 BE	Berkshire_pig_v1	GCA_001700575.1	Sus_scrofa	2434706773	Scaffold	94651	berkshire	EU
 DU	Ninghe_Sus_1	GCA_015776825.1	Sus_scrofa	2458240772	Chromosome	4265198	durocninghe	EU
 HS	Hampshire_pig_v1	GCA_001700165.1	Sus_scrofa	2437109612	Scaffold	102417	hampshire	EU
@@ -23,5 +23,7 @@ TI	Tibetan_Pig_v2	GCA_000472085.2	Sus_scrofa	2437742524	Scaffold	57199	tibetan	A
 WU	minipig_v1.0	GCA_000325925.2	Sus_scrofa	2508912457	Scaffold	31939	wuzhishan	AS
 OB	ASM2471841v1	GCA_024718415.1	Sus_scrofa	2455664950	Chromosome	8942329	ossabaw	EU
 SC	Sus_cebifrons.v1	GCA_905335845.1	Sus_cebifrons	2459270091	Scaffold	159795	cebifrons	Na
-PA1	ROS_Pafr_v1	GCA_016906955.1	Phacochoerus_africanus	2435083091	Chromosome	10602503	phacocerus1	AF
+PA1	ROS_Pafr_v1	GCF_016906955.1	Phacochoerus_africanus	2435083091	Chromosome	10602503	phacocerus1	AF
 PA2	CAU-W	GCA_019331625.1	Phacochoerus_africanus	2416652813	Scaffold	212097	phacocerus2	AF
+BT	ARS-UCD1.3	GCF_002263795.2	Bos_taurus	2711209831	Chromosome	25896116	bostaurus	EU
+CH	ARS1.2	GCF_001704415.2	Capra_hircus	2922617086	Chromosome	26244591	caprahircus	EU

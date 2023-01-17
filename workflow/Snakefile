@@ -1,22 +1,31 @@
 include: "rules/common.smk"
 include: "rules/genome_assemblies.smk"
+include: "rules/genome_alignment.smk"
 
 rule all:
     input:
         expand(
-            "GENOMES/Sus_scrofa/Sscrofa11.1/lastal/{other_species}/{other_assembly_name}/GCA_000003025.6_{other_assembly_accession}.maf",
+            "GENOMES/{species}/{ref_assembly_name}/lastdb_distant_orthology/{ref_assembly_accession}_{ref_assembly_name}_genomic.prj",
             zip,
-            other_species=genomes['Species'],
-            other_assembly_name=genomes['Assembly Name'],
-            other_assembly_accession=genomes['Assembly Accession'],
+            species="Sus_scrofa",
+            ref_assembly_name="Sscrofa11.1",
+            ref_assembly_accession="GCF_000003025.6",
         ),
+        expand(
+            "GENOMES/Sus_scrofa/Sscrofa11.1/last_split/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.csv",
+            zip,
+            other_species=genomes["Species"],
+            other_assembly_name=genomes["Assembly Name"],
+            other_assembly_accession=genomes["Assembly Accession"],
+        ),
+
         #expand(
-        #    "GENOMES/Sus_scrofa/Sscrofa11.1/last_train/Sus_scrofa/Berkshire_pig_v1/GCA_000003025.6_GCA_001700575.1.train",
-        #zip,
-        #other_species=genomes['Species'],
-        #other_assembly_name=genomes['Assembly Name'],
-        #other_assembly_accession=genomes['Assembly Accession'],
-        #),
+        #    "GENOMES/Sus_scrofa/Sscrofa11.1/last_train/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.train",
+        #    zip,
+        #    other_species=genomes['Species'],
+        #    other_assembly_name=genomes['Assembly Name'],
+        #    other_assembly_accession=genomes['Assembly Accession'],
+        #    ),
         #expand(
         #    "GENOMES/{species}/{assembly_name}/lastdb/{assembly_accession}_{assembly_name}_genomic.prj",
         #    zip,
