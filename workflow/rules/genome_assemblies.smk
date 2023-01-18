@@ -54,12 +54,12 @@ rule makeblastdb_assembly:
         "zcat {input} | makeblastdb -dbtype nucl -in - -out {params.db_name} -title {params.assembly_name}"
 
 
-rule lastdb_assembly:
+rule lastdb_assembly_for_basic_alignments:
     input:
         "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
     output:
         protected(multiext(
-            "GENOMES/{species}/{assembly_name}/lastdb/{assembly_accession}_{assembly_name}_genomic",
+            "GENOMES/{species}/{assembly_name}/lastdb_basic/{assembly_accession}_{assembly_name}_genomic",
             ".bck",
             ".des",
             ".prj",
@@ -72,17 +72,18 @@ rule lastdb_assembly:
         species=lambda wc: wc.species,
         assembly_name=lambda wc: wc.assembly_name,
         assembly_accession=lambda wc: wc.assembly_accession,
-        db_name="GENOMES/{species}/{assembly_name}/lastdb/{assembly_accession}_{assembly_name}_genomic",
+        db_name="GENOMES/{species}/{assembly_name}/lastdb_basic/{assembly_accession}_{assembly_name}_genomic",
     threads: 4
     shell:
-        "zcat {input} | lastdb -P {threads} -uNEAR {params.db_name}"
+        "zcat {input} | lastdb -P {threads} {params.db_name}"
 
-rule lastdb_reference_for_distant_orthology:
+
+rule lastdb_assembly_for_near_orthology:
     input:
-        "GENOMES/{species}/{ref_assembly_name}/ncbi/{ref_assembly_accession}_{ref_assembly_name}_genomic.fna.gz",
+        "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
     output:
         protected(multiext(
-            "GENOMES/{species}/{ref_assembly_name}/lastdb_distant_orthology/{ref_assembly_accession}_{ref_assembly_name}_genomic",
+            "GENOMES/{species}/{assembly_name}/lastdb_near/{assembly_accession}_{assembly_name}_genomic",
             ".bck",
             ".des",
             ".prj",
@@ -93,10 +94,32 @@ rule lastdb_reference_for_distant_orthology:
         )),
     params:
         species=lambda wc: wc.species,
+        assembly_name=lambda wc: wc.assembly_name,
+        assembly_accession=lambda wc: wc.assembly_accession,
+        db_name="GENOMES/{species}/{assembly_name}/lastdb_near/{assembly_accession}_{assembly_name}_genomic",
+    threads: 4
+    shell:
+        "zcat {input} | lastdb -P {threads} -uNEAR {params.db_name}"
+
+
+rule lastdb_reference_for_distant_orthology:
+    input:
+        "GENOMES/{species}/{ref_assembly_name}/ncbi/{ref_assembly_accession}_{ref_assembly_name}_genomic.fna.gz",
+    output:
+        protected(multiext(
+            "GENOMES/{species}/{ref_assembly_name}/lastdb_distant/{ref_assembly_accession}_{ref_assembly_name}_genomic",
+            ".des",
+            ".prj",
+            ".sds",
+            ".ssp",
+            ".tis",
+        )),
+    params:
+        species=lambda wc: wc.species,
         assembly_name=lambda wc: wc.ref_assembly_name,
         assembly_accession=lambda wc: wc.ref_assembly_accession,
-        db_name="GENOMES/{species}/{ref_assembly_name}/lastdb_distant_orthology/{ref_assembly_accession}_{ref_assembly_name}_genomic",
-    threads: 4
+        db_name="GENOMES/{species}/{ref_assembly_name}/lastdb_distant/{ref_assembly_accession}_{ref_assembly_name}_genomic",
+    threads: 16
     shell:
         "zcat {input} | lastdb -P {threads} -uMAM8 {params.db_name}"
 

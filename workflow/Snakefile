@@ -5,27 +5,37 @@ include: "rules/genome_alignment.smk"
 rule all:
     input:
         expand(
-            "GENOMES/{species}/{ref_assembly_name}/lastdb_distant_orthology/{ref_assembly_accession}_{ref_assembly_name}_genomic.prj",
+            "GENOMES/Sus_scrofa/Sscrofa11.1/lastal_distant/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.maf",
             zip,
-            species="Sus_scrofa",
-            ref_assembly_name="Sscrofa11.1",
-            ref_assembly_accession="GCF_000003025.6",
-        ),
-        expand(
-            "GENOMES/Sus_scrofa/Sscrofa11.1/last_split/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.csv",
-            zip,
-            other_species=genomes["Species"],
-            other_assembly_name=genomes["Assembly Name"],
-            other_assembly_accession=genomes["Assembly Accession"],
-        ),
-
-        #expand(
-        #    "GENOMES/Sus_scrofa/Sscrofa11.1/last_train/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.train",
+            other_species=genomes[genomes['Species']!='Sus_scrofa']['Species'],
+            other_assembly_name=genomes[genomes['Species']!='Sus_scrofa']['Assembly Name'],
+            other_assembly_accession=genomes[genomes['Species']!='Sus_scrofa']['Assembly Accession'],
+            ),
+        #find a way to combine 3 wc vs 3 wc instead of 6 vs self
+        #expand("GENOMES/{main_species}/{main_assembly_name}/last_train/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.train",
         #    zip,
+        #    main_species=genomes['Species'],
+        #    main_assembly_name=genomes['Assembly Name'],
+        #    main_assembly_accession=genomes['Assembly Accession'],),
         #    other_species=genomes['Species'],
         #    other_assembly_name=genomes['Assembly Name'],
-        #    other_assembly_accession=genomes['Assembly Accession'],
-        #    ),
+        #    other_assembly_accession=genomes['Assembly Accession'],),
+
+
+        #expand(
+        #    "GENOMES/{species}/{ref_assembly_name}/lastdb_distant_orthology/{ref_assembly_accession}_{ref_assembly_name}_genomic.prj",
+        #    zip,
+        #    species="Sus_scrofa",
+        #    ref_assembly_name="Sscrofa11.1",
+        #    ref_assembly_accession="GCF_000003025.6",
+        #),
+        #expand(
+        #    "GENOMES/Sus_scrofa/Sscrofa11.1/last_split/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.csv",
+        #    zip,
+        #    other_species=genomes["Species"],
+        #    other_assembly_name=genomes["Assembly Name"],
+        #    other_assembly_accession=genomes["Assembly Accession"],
+        #),
         #expand(
         #    "GENOMES/{species}/{assembly_name}/lastdb/{assembly_accession}_{assembly_name}_genomic.prj",
         #    zip,

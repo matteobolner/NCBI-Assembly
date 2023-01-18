@@ -1,35 +1,28 @@
-rule last_train_reference_vs_assembly:
+rule last_train_all_vs_all:
     input:
-        ref_genome_db="GENOMES/Sus_scrofa/Sscrofa11.1/lastdb/GCF_000003025.6_Sscrofa11.1_genomic.prj",
+        main_genome_db="GENOMES/{main_species}/{main_assembly_name}/lastdb_near/{main_assembly_accession}_{main_assembly_name}_genomic.prj",
         other_genome="GENOMES/{other_species}/{other_assembly_name}/ncbi/{other_assembly_accession}_{other_assembly_name}_genomic.fna.gz",
     output:
-        protected("GENOMES/Sus_scrofa/Sscrofa11.1/last_train/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.train"),
-    params:
-        ref_genome_db_name="GENOMES/Sus_scrofa/Sscrofa11.1/lastdb/GCF_000003025.6_Sscrofa11.1_genomic",
-        #ref_species=lambda wc: wc.ref_species,
-        #ref_assembly_name=lambda wc: wc.ref_assembly_name,
-        #ref_assembly_accession=lambda wc: wc.ref_assembly_accession,
-        #ref_genome_db_name="GENOMES/{ref_species}/{ref_assembly_name}/lastdb/{ref_assembly_accession}_{ref_assembly_name}_genomic",
+        protected("GENOMES/{main_species}/{main_assembly_name}/last_train/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.train"),
     threads: 6
     shell:
-        "zcat {input.other_genome} | last-train --revsym -E0.05 -C2 {params.ref_genome_db_name} -P {threads} > {output}"
+        "zcat {input.other_genome} | last-train --revsym -E0.05 -C2 $(echo {input.main_genome_db} | sed 's/\.[^.]*$//') -P {threads} > {output}"
 
-
-rule lastal_assembly_to_reference:
+rule lastal_near_assembly_to_reference:
     input:
-        ref_genome_db="GENOMES/Sus_scrofa/Sscrofa11.1/lastdb/GCF_000003025.6_Sscrofa11.1_genomic.prj",
+        ref_genome_db="GENOMES/Sus_scrofa/Sscrofa11.1/lastdb_near/GCF_000003025.6_Sscrofa11.1_genomic.prj",
         other_genome="GENOMES/{other_species}/{other_assembly_name}/ncbi/{other_assembly_accession}_{other_assembly_name}_genomic.fna.gz",
         trained_model="GENOMES/Sus_scrofa/Sscrofa11.1/last_train/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.train",
     output:
         protected("GENOMES/Sus_scrofa/Sscrofa11.1/lastal/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.maf"),
     params:
-        ref_genome_db="GENOMES/Sus_scrofa/Sscrofa11.1/lastdb/GCF_000003025.6_Sscrofa11.1_genomic",
+        ref_genome_db="GENOMES/Sus_scrofa/Sscrofa11.1/lastdb_near/GCF_000003025.6_Sscrofa11.1_genomic",
     threads: 6
     shell:
         "zcat {input.other_genome} | lastal -E0.05 -C2 --split-f=MAF+ -P {threads} -p {input.trained_model} {params.ref_genome_db} > {output}"
 
 
-rule last_split_assembly_and_reference:
+rule last_split_near_assembly_and_reference:
     input:
         "GENOMES/Sus_scrofa/Sscrofa11.1/lastal/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.maf",
     output:
@@ -37,8 +30,7 @@ rule last_split_assembly_and_reference:
     shell:
         "last-split -r -m1e-5 {input} | last-postmask > {output}"
 
-
-rule convert_last_split_output_to_tab:
+rule convert_last_split_near_output_to_tab:
     input:
         "GENOMES/Sus_scrofa/Sscrofa11.1/last_split/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.split.maf",
     output:
@@ -46,7 +38,7 @@ rule convert_last_split_output_to_tab:
     shell:
         "maf-convert tab {input} > {output}"
 
-rule convert_last_split_output_to_blasttab:
+rule convert_last_split_near_output_to_blasttab:
     input:
         "GENOMES/Sus_scrofa/Sscrofa11.1/last_split/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.split.maf",
     output:
@@ -54,7 +46,7 @@ rule convert_last_split_output_to_blasttab:
     shell:
         "maf-convert blasttab {input} > {output}"
 
-rule elaborate_blasttab_output_and_get_statistics:
+rule elaborate_blasttab_near_output_and_get_statistics:
     input:
         "GENOMES/Sus_scrofa/Sscrofa11.1/last_split/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.split.blasttab",
         "GENOMES/{other_species}/{other_assembly_name}/ncbi/{other_assembly_accession}_{other_assembly_name}_assembly_report.txt",
@@ -69,6 +61,47 @@ rule elaborate_blasttab_output_and_get_statistics:
     script:
         "../scripts/genome_alignment/elaborate_blasttab_output_and_get_statistics.py"
 
+rule merge_alignment_stats:
+    input:
+        alignment_stats=expand("GENOMES/Sus_scrofa/Sscrofa11.1/last_split/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}_stats.csv",
+                zip, other_species=genomes['Species'], other_assembly_name=genomes['Assembly Name'], other_assembly_accession=genomes['Assembly Accession'])
+    output:
+        merged_stats="STATS/genome_alignment/tables/genomes_aligned_to_Sscrofa11.1_stats.tsv"
+    run:
+        stats=pd.concat([pd.read_csv(i) for i in input.alignment_stats])
+        stats.to_csv(output.merged_stats)
+
+rule last_train_distant_assembly_vs_reference:
+    input:
+        ref_genome_db="GENOMES/Sus_scrofa/Sscrofa11.1/lastdb_distant/GCF_000003025.6_Sscrofa11.1_genomic.prj",
+        other_genome="GENOMES/{other_species}/{other_assembly_name}/ncbi/{other_assembly_accession}_{other_assembly_name}_genomic.fna.gz",
+    output:
+        protected("GENOMES/Sus_scrofa/Sscrofa11.1/last_train_distant/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.train"),
+    shell:
+        "zcat {input.other_genome} | last-train --revsym -E0.05 -C2 $(echo {input.ref_genome_db} | sed 's/\.[^.]*$//') -P {threads} > {output}"
+
+rule lastal_distant_assembly_to_reference:
+    input:
+        ref_genome_db="GENOMES/Sus_scrofa/Sscrofa11.1/lastdb_distant/GCF_000003025.6_Sscrofa11.1_genomic.prj",
+        other_genome="GENOMES/{other_species}/{other_assembly_name}/ncbi/{other_assembly_accession}_{other_assembly_name}_genomic.fna.gz",
+        trained_model="GENOMES/Sus_scrofa/Sscrofa11.1/last_train_distant/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.train",
+    output:
+        protected("GENOMES/Sus_scrofa/Sscrofa11.1/lastal_distant/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.maf"),
+    threads: 4
+    shell:
+        "zcat {input.other_genome} | lastal -E0.05 -C2 --split-f=MAF+ -m100 -P {threads} -p {input.trained_model} $(echo {input.ref_genome_db} | sed 's/\.[^.]*$//') > {output}"
+
+
+
+rule gzip_unused_files:
+    input:
+        split_maf="GENOMES/Sus_scrofa/Sscrofa11.1/last_split/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.split.maf",
+        maf="GENOMES/Sus_scrofa/Sscrofa11.1/lastal/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.maf"
+    output:
+        "GENOMES/Sus_scrofa/Sscrofa11.1/last_split/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.split.maf.gz",
+        "GENOMES/Sus_scrofa/Sscrofa11.1/lastal/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.maf.gz"
+    shell:
+        "gzip {input.maf} && gzip {input.split_maf}"
 # rule last_dotplot_assembly_and_reference:
 #    input:
 #        "GENOMES/Sus_scrofa/Sscrofa11.1/last_split/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.split.maf"
