@@ -4,13 +4,21 @@ include: "rules/genome_alignment.smk"
 
 rule all:
     input:
-        expand(
-            "GENOMES/Sus_scrofa/Sscrofa11.1/lastal_distant/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.maf",
-            zip,
-            other_species=genomes[genomes['Species']!='Sus_scrofa']['Species'],
-            other_assembly_name=genomes[genomes['Species']!='Sus_scrofa']['Assembly Name'],
-            other_assembly_accession=genomes[genomes['Species']!='Sus_scrofa']['Assembly Accession'],
-            ),
+        "STATS/genome_alignment/tables/genomes_aligned_to_Sscrofa11.1_stats.tsv"
+        #expand(
+        #    "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna.gz",
+        #    zip,
+        #    species="Sus_cebifrons",
+        #    assembly_accession="GCA_905335845.1",
+        #    assembly_name="Sus_cebifrons.v1",)
+
+        #expand(
+        #    "GENOMES/Sus_scrofa/Sscrofa11.1/lastal_distant/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.maf",
+        #    zip,
+        #    other_species=genomes[genomes['Species']!='Sus_scrofa']['Species'],
+        #    other_assembly_name=genomes[genomes['Species']!='Sus_scrofa']['Assembly Name'],
+        #    other_assembly_accession=genomes[genomes['Species']!='Sus_scrofa']['Assembly Accession'],
+        #    ),
         #find a way to combine 3 wc vs 3 wc instead of 6 vs self
         #expand("GENOMES/{main_species}/{main_assembly_name}/last_train/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.train",
         #    zip,

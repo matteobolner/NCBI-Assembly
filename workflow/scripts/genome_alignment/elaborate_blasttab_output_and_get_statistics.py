@@ -2,10 +2,8 @@ import pandas as pd
 
 df = pd.read_csv(snakemake.input[0], sep="\t", header=None)
 
-report = pd.read_csv(
+report = pd.read_table(
     snakemake.input[1],
-    comment="#",
-    sep="\t",
 )
 
 df.columns = [
@@ -36,16 +34,13 @@ df["query_aligned_length"] = (
     df["query_forward_end_0_based"] - df["query_forward_start_0_based"]
 )
 df["reference_start_0_based"] = df["reference_start"] - 1
-df["refrence_end_0_based"] = df["reference_end"]
+df["reference_end_0_based"] = df["reference_end"]
 df["reference_aligned_length"] = (
-    df["refrence_end_0_based"] - df["reference_start_0_based"]
+    df["reference_end_0_based"] - df["reference_start_0_based"]
 )
 
-report['sequence_accession']=report['RefSeq-Accn'].where(report['RefSeq-Accn']!='na', report['GenBank-Accn'])
-
-
 seq_size_dict = {
-    i: j for i, j in zip(report["sequence_accession"], report["Sequence-Length"])
+    i: j for i, j in zip(report["Sequence-ID"], report["Sequence-Length"])
 }
 
 df["query_sequence_length"] = df["query_name"].apply(lambda x: seq_size_dict[x])

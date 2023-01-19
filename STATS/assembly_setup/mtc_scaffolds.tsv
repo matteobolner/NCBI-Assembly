@@ -1,0 +1,15 @@
+Sequence-Name	Sequence-Role	Assigned-Molecule	Assigned-Molecule-Location/Type	GenBank-Accn	Relationship	RefSeq-Accn	Assembly-Unit	Sequence-Length	UCSC-style-name	Sequence-ID	Chromosome/Scaffold Name	Assembly Name	Assembly Accession
+MT	assembled-molecule	MT	Mitochondrion	na	<>	NC_000845.1	non-nuclear	16613	chrM	NC_000845.1	MT	Sscrofa11.1	GCF_000003025.6
+MT	assembled-molecule	MT	Mitochondrion	na	<>	NC_000845.1	non-nuclear	16613	chrM	NC_000845.1	MT	Sscrofa10.2	GCF_000003025.5
+MT1	unlocalized-scaffold	MT	Mitochondrion	JAFEHA010013381.1	<>	na	non-nuclear	9860	na	JAFEHA010013381.1	MT	CAU-K	GCA_019290145.1
+MT2	unlocalized-scaffold	MT	Mitochondrion	JAFEHA010013382.1	<>	na	non-nuclear	1512	na	JAFEHA010013382.1	MT	CAU-K	GCA_019290145.1
+MT3	unlocalized-scaffold	MT	Mitochondrion	JAFEHA010013383.1	<>	na	non-nuclear	1554	na	JAFEHA010013383.1	MT	CAU-K	GCA_019290145.1
+MT4	unlocalized-scaffold	MT	Mitochondrion	JAFEHA010013384.1	<>	na	non-nuclear	1082	na	JAFEHA010013384.1	MT	CAU-K	GCA_019290145.1
+MT	assembled-molecule	MT	Mitochondrion	CP071572.1	<>	na	non-nuclear	16611	na	CP071572.1	MT	NSME_pig_1.2	GCA_006511355.2
+MT	unplaced-scaffold	MT	na	CAJOYB010001573.1	<>	na	Primary Assembly	16560	na	CAJOYB010001573.1	MT	Sus_cebifrons.v1	GCA_905335845.1
+chrMT	assembled-molecule	MT	Mitochondrion	CM029269.1	<>	na	non-nuclear	16743	na	CM029269.1	MT	ROS_Pafr_v1	GCF_016906955.1
+MT2	assembled-molecule	MT	Mitochondrion	CM033171.1	<>	na	non-nuclear	16566	na	CM033171.1	MT	CAU-W	GCA_019331625.1
+MT	assembled-molecule	MT	Mitochondrion	na	<>	NC_006853.1	non-nuclear	16338	chrM	NC_006853.1	MT	ARS-UCD1.3	GCF_002263795.2
+MT	assembled-molecule	MT	Mitochondrion	na	<>	NC_005044.2	non-nuclear	16643	na	NC_005044.2	MT	ARS1.2	GCF_001704415.2
+SScrofa.1703USDA.meta.all.qpjp_s	assembled-molecule	MT	Mitochondrion	CM009106.1	<>	na	non-nuclear	16760	na	CM009106.1	MT	USMARCv1.0	GCA_002844635.1
+M	assembled-molecule	MT	Mitochondrion	CM008198.1	<>	na	non-nuclear	16340	na	CM008198.1	MT	ARS-UCD1.3	GCF_002263795.2
