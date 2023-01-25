@@ -1,15 +1,23 @@
 import scripts.assembled_genomes_setup.NCBI_Tools as NCBI_Tools
 
 
-#rule download_assembly:
-#    output:
-#        "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
-#    params:
-#        url=lambda wc: NCBI_Tools.get_genome_fasta_url_from_ncbi_genome_assembly_accession_and_name(
-#            wc.assembly_accession, wc.assembly_name
-#        ),
-#    shell:
-#        "rsync --copy-links --times --verbose rsync://{params.url} {output}"
+rule download_assembly:
+    output:
+        temp("GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_to_bgzip.fna.gz"),
+    params:
+        url=lambda wc: NCBI_Tools.get_genome_fasta_url_from_ncbi_genome_assembly_accession_and_name(
+            wc.assembly_accession, wc.assembly_name
+        ),
+    shell:
+        "rsync --copy-links --times --verbose rsync://{params.url} {output}"
+
+rule bgzip_assembly:
+    input:
+        "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_to_bgzip.fna.gz",
+    output:
+        "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
+    shell:
+        "gunzip -c {input} | bgzip > {output}"
 
 rule download_assembly_report:
     output:
@@ -74,13 +82,13 @@ rule mask_mtc_sequences_in_assembly:
     shell:
         "bedtools maskfasta -fi {input.fasta} -bed {input.bed} -fo {output} "
 
-rule zip_masked_genome:
+rule bgzip_masked_genome:
     input:
         "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna"
     output:
         "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna.gz"
     shell:
-        "gzip {input}"
+        "bgzip {input}"
 
 rule makeblastdb_assembly:
     input:
@@ -155,10 +163,10 @@ rule lastdb_assembly_for_near_orthology_with_masked_mtgenome:
 
 rule lastdb_reference_for_distant_orthology:
     input:
-        "GENOMES/{species}/{ref_assembly_name}/ncbi/{ref_assembly_accession}_{ref_assembly_name}_genomic.fna.gz",
+        "GENOMES/{species}/{ref_assembly_name}/ncbi/{ref_assembly_accession}_{ref_assembly_name}_genomic_masked_mtgenome.fna.gz",
     output:
         protected(multiext(
-            "GENOMES/{species}/{ref_assembly_name}/lastdb_distant/{ref_assembly_accession}_{ref_assembly_name}_genomic",
+            "GENOMES/{species}/{ref_assembly_name}/lastdb_distant/{ref_assembly_accession}_{ref_assembly_name}_genomic_masked_mtgenome",
             ".des",
             ".prj",
             ".sds",
@@ -169,7 +177,7 @@ rule lastdb_reference_for_distant_orthology:
         species=lambda wc: wc.species,
         assembly_name=lambda wc: wc.ref_assembly_name,
         assembly_accession=lambda wc: wc.ref_assembly_accession,
-        db_name="GENOMES/{species}/{ref_assembly_name}/lastdb_distant/{ref_assembly_accession}_{ref_assembly_name}_genomic",
+        db_name="GENOMES/{species}/{ref_assembly_name}/lastdb_distant/{ref_assembly_accession}_{ref_assembly_name}_genomic_masked_mtgenome",
     threads: 16
     shell:
         "zcat {input} | lastdb -P {threads} -uMAM8 {params.db_name}"

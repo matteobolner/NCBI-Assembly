@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 df = pd.read_csv(snakemake.input[0], sep="\t", header=None)
 
@@ -59,10 +60,10 @@ for i in report["GenBank-Accn"].tolist():
     per_sequence_coverage_dict_pctg.setdefault(i, 0)
     per_sequence_coverage_dict.setdefault(i, 0)
 
-report["Length_of_sequence_aligned_to_reference"] = report["GenBank-Accn"].apply(
+report["Length of sequence aligned to reference"] = report["GenBank-Accn"].apply(
     lambda x: per_sequence_coverage_dict[x]
 )
-report["Percentage_of_sequence_aligned_to_reference"] = report["GenBank-Accn"].apply(
+report["Percentage of sequence aligned to reference"] = report["GenBank-Accn"].apply(
     lambda x: per_sequence_coverage_dict_pctg[x]
 )
 
@@ -106,11 +107,28 @@ stats_df.loc[0] = [
 
 df.to_csv(snakemake.output[0], index=False)
 
+
+number_of_reference_sequences_aligned={}
+reference_sequences_aligned={}
+for name,group in df.groupby(by='query_name'):
+    number_of_reference_sequences_aligned[name]=(len(group['reference_name'].unique()))
+    reference_sequences_aligned[name]=";".join(group['reference_name'].unique().tolist())
+
+for i in report['Sequence-ID'].unique():
+    number_of_reference_sequences_aligned.setdefault(i,0)
+    reference_sequences_aligned.setdefault(i,np.nan)
+
+report['Number of reference sequences aligned']=report['Sequence-ID'].apply(lambda x: number_of_reference_sequences_aligned[x])
+report['ID of reference sequences aligned']=report['Sequence-ID'].apply(lambda x: reference_sequences_aligned[x])
+
 report = report[
     [
         "GenBank-Accn",
-        "Length_of_sequence_aligned_to_reference",
-        "Percentage_of_sequence_aligned_to_reference",
+        "Length of sequence aligned to reference",
+        "Percentage of sequence aligned to reference",
+        "Number of reference sequences aligned",
+        "ID of reference sequences aligned"
+
     ]
 ]
 
