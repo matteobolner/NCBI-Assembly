@@ -161,6 +161,15 @@ rule minigraph_call_variants:
     shell:
         "gfatools bubble {input} > {output}"
 
+rule minigraph_get_paths:
+    input:
+        graph="ANALYSES/minigraph/sus_scrofa_graph.gfa",
+        genome="GENOMES/Sus_scrofa/{other_assembly_name}/ncbi/{other_assembly_accession}_{other_assembly_name}_genomic_masked_mtgenome.fna.gz"
+    output:
+        "ANALYSES/minigraph/genome_paths/Sus_scrofa/{other_assembly_name}/{other_assembly_accession}_{other_assembly_name}.gfa"
+    shell:
+        "minigraph -cxasm --call {input.graph} {input.genome} > {output}"
+
 
 rule minimap_align_close_genomes:
     input:

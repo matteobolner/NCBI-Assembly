@@ -115,10 +115,10 @@ rule makeblastdb_assembly:
 
 rule lastdb_assembly_for_basic_alignments:
     input:
-        "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
+        "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna.gz",
     output:
         protected(multiext(
-            "GENOMES/{species}/{assembly_name}/lastdb_basic/{assembly_accession}_{assembly_name}_genomic",
+            "GENOMES/{species}/{assembly_name}/lastdb_basic/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome",
             ".bck",
             ".des",
             ".prj",
@@ -131,7 +131,7 @@ rule lastdb_assembly_for_basic_alignments:
         species=lambda wc: wc.species,
         assembly_name=lambda wc: wc.assembly_name,
         assembly_accession=lambda wc: wc.assembly_accession,
-        db_name="GENOMES/{species}/{assembly_name}/lastdb_basic/{assembly_accession}_{assembly_name}_genomic",
+        db_name="GENOMES/{species}/{assembly_name}/lastdb_basic/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome",
     threads: 4
     shell:
         "zcat {input} | lastdb -P {threads} {params.db_name}"
