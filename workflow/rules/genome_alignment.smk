@@ -39,7 +39,7 @@ rule last_train_all_vs_all:
         main_genome_db="GENOMES/{main_species}/{main_assembly_name}/lastdb_near/{main_assembly_accession}_{main_assembly_name}_genomic.prj",
         other_genome="GENOMES/{other_species}/{other_assembly_name}/ncbi/{other_assembly_accession}_{other_assembly_name}_genomic.fna.gz",
     output:
-        protected("GENOMES/{main_species}/{main_assembly_name}/last_train/{other_species}/{other_assembly_name}/{main_assembly_accession}_vs_{other_assembly_accession}.train"),
+        "GENOMES/{main_species}/{main_assembly_name}/last_train/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.train",
     threads: 4
     shell:
         "zcat {input.other_genome} | last-train --revsym -E0.05 -C2 $(echo {input.main_genome_db} | sed 's/\.[^.]*$//') -P {threads} > {output}"
@@ -50,18 +50,41 @@ rule lastal_near_all_vs_all_masked_mtgenome:
         other_genome="GENOMES/{other_species}/{other_assembly_name}/ncbi/{other_assembly_accession}_{other_assembly_name}_genomic_masked_mtgenome.fna.gz",
         trained_model="GENOMES/{main_species}/{main_assembly_name}/last_train/{other_species}/{other_assembly_name}/{main_assembly_accession}_vs_{other_assembly_accession}.train",
     output:
-        protected("GENOMES/{main_species}/{main_assembly_name}/lastal_near_with_masked_mtgenome/{other_species}/{other_assembly_name}/{main_assembly_accession}_vs_{other_assembly_accession}.maf.gz"),
+        "GENOMES/{main_species}/{main_assembly_name}/lastal_near_with_masked_mtgenome/{other_species}/{other_assembly_name}/{main_assembly_accession}_vs_{other_assembly_accession}.maf.gz",
     threads: 4
     shell:
         "zcat {input.other_genome} | lastal -E0.05 -C2 --split-f=MAF+ -P {threads} -p {input.trained_model} $(echo {input.main_genome_db} | sed 's/\.[^.]*$//') | gzip > {output}"
 
 rule last_split_near_assembly_and_reference_masked:
     input:
-        "GENOMES/{main_species}/{main_assembly_name}/lastal_near_with_masked_mtgenome/{other_species}/{other_assembly_name}/{main_assembly_accession}_vs_{other_assembly_accession}.maf.gz",
+        "GENOMES/{main_species}/{main_assembly_name}/lastal_near_with_masked_mtgenome/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.maf.gz",
     output:
-        "GENOMES/{main_species}/{main_assembly_name}/last_split_near/{other_species}/{other_assembly_name}/{main_assembly_accession}_vs_{other_assembly_accession}.split.maf.gz"
+        "GENOMES/{main_species}/{main_assembly_name}/last_split_near/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.split.maf.gz"
     shell:
         "zcat {input} last-split -r -m1e-5 - | last-postmask | gzip > {output}"
+
+rule sort_last_split_near:
+    input:
+        "GENOMES/{main_species}/{main_assembly_name}/last_split_near/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.split.maf.gz"
+    output:
+        "GENOMES/{main_species}/{main_assembly_name}/last_split_near/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.split.sorted.maf"
+    shell:
+        "zcat {input} | maf-sort - > {output}"
+
+rule maf_join_all_near_split_alignments:
+    input:
+        expand(
+        "GENOMES/Sus_scrofa/Sscrofa11.1/last_split_near/{other_species}/{other_assembly_name}/GCF_000003025.6_{other_assembly_accession}.split.sorted.maf",
+        zip,
+        other_species=genomes[(~genomes['Species'].isin(['Capra_hircus','Bos_taurus']))&(genomes['Assembly Name']!='Sscrofa11.1')]['Species'],
+        other_assembly_name=genomes[(~genomes['Species'].isin(['Capra_hircus','Bos_taurus']))&(genomes['Assembly Name']!='Sscrofa11.1')]['Assembly Name'],
+        other_assembly_accession=genomes[(~genomes['Species'].isin(['Capra_hircus','Bos_taurus']))&(genomes['Assembly Name']!='Sscrofa11.1')]['Assembly Accession'],
+        )
+    output:
+        "ANALYSES/lastal/joined_aligmments/Sus_scrofa/Sscrofa11.1/GCF_000003025.6_vs_all_suidae.maf"
+    shell:
+        "maf-join {input} > {output}"
+
 
 rule convert_last_split_near_output_to_tab:
     input:

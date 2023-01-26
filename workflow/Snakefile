@@ -2,29 +2,32 @@ include: "rules/common.smk"
 include: "rules/genome_assemblies.smk"
 include: "rules/genome_alignment.smk"
 
+print(genomes[(~genomes['Species'].isin(['Capra_hircus','Bos_taurus']))&(genomes['Assembly Name']!='Sscrofa11.1')])
+
 rule all:
     input:
-        expand("GENOMES/{species}/{assembly_name}/lastdb_basic/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.prj",
-        zip,
-        species=genomes['Species'],
-        assembly_name=genomes['Assembly Name'],
-        assembly_accession=genomes['Assembly Accession']
-        )
+        "ANALYSES/lastal/joined_aligmments/Sus_scrofa/Sscrofa11.1/GCF_000003025.6_vs_all_suidae.maf"
+        #expand(expand(
+        #    "GENOMES/{main_species}/{main_assembly_name}/lastal_near_with_masked_mtgenome/{{other_species}}/{{other_assembly_name}}/{main_assembly_accession}_vs_{{other_assembly_accession}}.maf.gz",
+        #    zip,
+        #    main_species="Sus_scrofa",
+        #    main_assembly_name="Sscrofa11.1",
+        #    main_assembly_accession="GCF_000003025.6"),
+        #    zip,
+        #    other_species=genomes[~genomes['Species'].isin(['Capra_hircus','Bos_taurus'])]['Species'],
+        #    other_assembly_name=genomes[~genomes['Species'].isin(['Capra_hircus','Bos_taurus'])]['Assembly Name'],
+        #    other_assembly_accession=genomes[~genomes['Species'].isin(['Capra_hircus','Bos_taurus'])]['Assembly Accession']),
+
+        #expand("GENOMES/{species}/{assembly_name}/lastdb_basic/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.prj",
+        #zip,
+        #species=genomes['Species'],
+        #assembly_name=genomes['Assembly Name'],
+        #assembly_accession=genomes['Assembly Accession']
+        #)
         #expand("ANALYSES/minigraph/genome_paths/Sus_scrofa/{other_assembly_name}/{other_assembly_accession}_{other_assembly_name}.gfa",
         #zip,
         #other_assembly_accession=genomes[genomes['Species']=='Sus_scrofa']['Assembly Accession'],
         #other_assembly_name=genomes[genomes['Species']=='Sus_scrofa']['Assembly Name'])
-
-        #expand(expand(
-        #    "ANALYSES/minimap2/intraspecies_alignment/{main_species}/{main_assembly_name}/{{other_species}}/{{other_assembly_name}}/{{other_assembly_accession}}_vs_{main_assembly_accession}.var.txt",
-        #    zip,
-        #    main_species=genomes[genomes['Species']=='Sus_scrofa']['Species'],
-        #    main_assembly_name=genomes[genomes['Species']=='Sus_scrofa']['Assembly Name'],
-        #    main_assembly_accession=genomes[genomes['Species']=='Sus_scrofa']['Assembly Accession']),
-        #    zip,
-        #    other_species=genomes[genomes['Species']=='Sus_scrofa']['Species'],
-        #    other_assembly_name=genomes[genomes['Species']=='Sus_scrofa']['Assembly Name'],
-        #    other_assembly_accession=genomes[genomes['Species']=='Sus_scrofa']['Assembly Accession']),
 
         #expand(expand(
         #    "ANALYSES/minimap2/interspecies_alignment/{main_species}/{main_assembly_name}/{{other_species}}/{{other_assembly_name}}/{{other_assembly_accession}}_vs_{main_assembly_accession}.var.txt",
