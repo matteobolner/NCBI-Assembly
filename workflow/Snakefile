@@ -1,23 +1,31 @@
 include: "rules/common.smk"
-include: "rules/genome_assemblies.smk"
+include: "rules/download_and_prepare_assemblies.smk"
+include: "rules/prepare_dbs_and_indexes.smk"
 include: "rules/genome_alignment.smk"
+include: "rules/igf2_pangene.smk"
 
-print(genomes[(~genomes['Species'].isin(['Capra_hircus','Bos_taurus']))&(genomes['Assembly Name']!='Sscrofa11.1')])
 
 rule all:
     input:
-        "ANALYSES/lastal/joined_aligmments/Sus_scrofa/Sscrofa11.1/GCF_000003025.6_vs_all_suidae.maf"
-        #expand(expand(
-        #    "GENOMES/{main_species}/{main_assembly_name}/lastal_near_with_masked_mtgenome/{{other_species}}/{{other_assembly_name}}/{main_assembly_accession}_vs_{{other_assembly_accession}}.maf.gz",
-        #    zip,
-        #    main_species="Sus_scrofa",
-        #    main_assembly_name="Sscrofa11.1",
-        #    main_assembly_accession="GCF_000003025.6"),
-        #    zip,
-        #    other_species=genomes[~genomes['Species'].isin(['Capra_hircus','Bos_taurus'])]['Species'],
-        #    other_assembly_name=genomes[~genomes['Species'].isin(['Capra_hircus','Bos_taurus'])]['Assembly Name'],
-        #    other_assembly_accession=genomes[~genomes['Species'].isin(['Capra_hircus','Bos_taurus'])]['Assembly Accession']),
+        expand(
+            "GENOMES/{species}/{assembly_name}/minimap2/{assembly_accession}_{assembly_name}_genomic.umi", zip,
+            species=genomes['Species'],
+            assembly_name=genomes['Assembly Name'],
+            assembly_accession=genomes['Assembly Accession']),
+        #expand("GENOMES/{species}/{assembly_name}/blastdb/{assembly_accession}_{assembly_name}_genomic.ndb",
+        #zip,
+        #species=genomes['Species'],
+        #assembly_name=genomes['Assembly Name'],
+        #assembly_accession=genomes['Assembly Accession']
+        #)
 
+        #expand("GENOMES/{species}/{assembly_name}/lastdb_near/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.prj",
+        #zip,
+        #species=genomes[~genomes['Species'].isin(['Bos_taurus','Capra_hircus'])]['Species'],
+        #assembly_name=genomes[~genomes['Species'].isin(['Bos_taurus','Capra_hircus'])]['Assembly Name'],
+        #assembly_accession=genomes[~genomes['Species'].isin(['Bos_taurus','Capra_hircus'])]['Assembly Accession'],
+        #)
+        #"ANALYSES/lastal/joined_aligmments/Sus_scrofa/Sscrofa11.1/GCF_000003025.6_vs_all_suidae.maf"
         #expand("GENOMES/{species}/{assembly_name}/lastdb_basic/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.prj",
         #zip,
         #species=genomes['Species'],

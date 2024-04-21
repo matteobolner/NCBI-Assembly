@@ -12,4 +12,5 @@ MT2	assembled-molecule	MT	Mitochondrion	CM033171.1	<>	na	non-nuclear	16566	na	CM
 MT	assembled-molecule	MT	Mitochondrion	na	<>	NC_006853.1	non-nuclear	16338	chrM	NC_006853.1	MT	ARS-UCD1.3	GCF_002263795.2
 MT	assembled-molecule	MT	Mitochondrion	na	<>	NC_005044.2	non-nuclear	16643	na	NC_005044.2	MT	ARS1.2	GCF_001704415.2
 SScrofa.1703USDA.meta.all.qpjp_s	assembled-molecule	MT	Mitochondrion	CM009106.1	<>	na	non-nuclear	16760	na	CM009106.1	MT	USMARCv1.0	GCA_002844635.1
+mitochondrion	assembled-molecule	MT	Mitochondrion	CM062343.1	<>	na	non-nuclear	16701	na	CM062343.1	MT	TPI_Babraham_pig_v1	GCA_031225015.1
 M	assembled-molecule	MT	Mitochondrion	CM008198.1	<>	na	non-nuclear	16340	na	CM008198.1	MT	ARS-UCD1.3	GCF_002263795.2

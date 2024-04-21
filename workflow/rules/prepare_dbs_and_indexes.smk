@@ -1,6 +1,23 @@
+rule miniprot_index:
+    input:
+        "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz"
+    output:
+        "GENOMES/{species}/{assembly_name}/miniprot/{assembly_accession}_{assembly_name}_genomic.mpi"
+    threads:
+        4
+    shell:
+        "miniprot -t{threads} -d {output} {input}"
+
+rule get_genome_dict:
+    input:
+        "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz"
+    output:
+        "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.dict"
+    shell:
+        "samtools dict {input} > {output}"
+
 #########################################################################################################################################################
 
-miniprot -t8 -d ref.mpi ref.fna
 
 """
 MTGENOME MASKING - FOR NUMTS
@@ -21,6 +38,7 @@ rule gunzip_genome_for_maskfasta:
         "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz"
     output:
         temp("GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna")
+    threads: 1
     shell:
         "zcat {input} > {output}"
 
@@ -30,6 +48,7 @@ rule mask_mtc_sequences_in_assembly:
         bed="STATS/assembly_setup/mtc_scaffolds.bed"
     output:
         temp("GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna")
+    threads: 1
     shell:
         "bedtools maskfasta -fi {input.fasta} -bed {input.bed} -fo {output} "
 
@@ -38,6 +57,7 @@ rule bgzip_masked_genome:
         "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna"
     output:
         "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna.gz"
+    threads: 4
     shell:
         "bgzip {input}"
 ##########################################################################################################################################################
@@ -139,6 +159,15 @@ rule minimap2_index_assembly:
     input:
         "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
     output:
-        protected("GENOMES/{species}/{assembly_name}/minimap2/{assembly_accession}_{assembly_name}_genomic.mni"),
+        "GENOMES/{species}/{assembly_name}/minimap2/{assembly_accession}_{assembly_name}_genomic.mni",
     shell:
-        "minimap2 -d {output} {input}"
+        "~/work/software/minimap2-2.26_x64-linux/minimap2 -d {output} {input}"
+
+
+rule unimap_index_assembly:
+    input:
+        "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
+    output:
+        "GENOMES/{species}/{assembly_name}/minimap2/{assembly_accession}_{assembly_name}_genomic.umi",
+    shell:
+        "unimap -d {output} {input}"

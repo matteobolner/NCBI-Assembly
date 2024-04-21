@@ -1,3 +1,15 @@
+"""
+rule nucmer_test:
+    input:
+        qry="GENOMES/Sus_scrofa/ASM764409v1/ncbi/chr10.fna",
+    output:
+        "test/last.maf"
+    threads:
+        4
+    shell:
+        "lastal -E0.05 -C2 --split-f=MAF+ -P {threads} -p /lustre/home/bolner/data/GENOMES/Sus_scrofa/Sscrofa11.1/last_train/Sus_scrofa/ASM764409v1/GCF_000003025.6_GCA_007644095.1.train /lustre/home/bolner/data/GENOMES/Sus_scrofa/Sscrofa11.1/lastdb_near/GCF_000003025.6_Sscrofa11.1_genomic_masked_mtgenome {input.qry} > {output}"
+"""
+
 rule ragtag_correct:
     input:
         main_genome="GENOMES/{main_species}/{main_assembly_name}/ncbi/{main_assembly_accession}_{main_assembly_name}_genomic_masked_mtgenome.fna.gz",
@@ -36,7 +48,7 @@ rule ragtag_scaffold:
 
 rule last_train_all_vs_all:
     input:
-        main_genome_db="GENOMES/{main_species}/{main_assembly_name}/lastdb_near/{main_assembly_accession}_{main_assembly_name}_genomic.prj",
+        main_genome_db="GENOMES/{main_species}/{main_assembly_name}/lastdb_near/{main_assembly_accession}_{main_assembly_name}_genomic_masked_mtgenome.prj",
         other_genome="GENOMES/{other_species}/{other_assembly_name}/ncbi/{other_assembly_accession}_{other_assembly_name}_genomic.fna.gz",
     output:
         "GENOMES/{main_species}/{main_assembly_name}/last_train/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.train",
@@ -48,9 +60,9 @@ rule lastal_near_all_vs_all_masked_mtgenome:
     input:
         main_genome_db="GENOMES/{main_species}/{main_assembly_name}/lastdb_near/{main_assembly_accession}_{main_assembly_name}_genomic_masked_mtgenome.prj",
         other_genome="GENOMES/{other_species}/{other_assembly_name}/ncbi/{other_assembly_accession}_{other_assembly_name}_genomic_masked_mtgenome.fna.gz",
-        trained_model="GENOMES/{main_species}/{main_assembly_name}/last_train/{other_species}/{other_assembly_name}/{main_assembly_accession}_vs_{other_assembly_accession}.train",
+        trained_model="GENOMES/{main_species}/{main_assembly_name}/last_train/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.train",
     output:
-        "GENOMES/{main_species}/{main_assembly_name}/lastal_near_with_masked_mtgenome/{other_species}/{other_assembly_name}/{main_assembly_accession}_vs_{other_assembly_accession}.maf.gz",
+        "GENOMES/{main_species}/{main_assembly_name}/lastal_near_with_masked_mtgenome/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.maf.gz",
     threads: 4
     shell:
         "zcat {input.other_genome} | lastal -E0.05 -C2 --split-f=MAF+ -P {threads} -p {input.trained_model} $(echo {input.main_genome_db} | sed 's/\.[^.]*$//') | gzip > {output}"
@@ -59,17 +71,17 @@ rule last_split_near_assembly_and_reference_masked:
     input:
         "GENOMES/{main_species}/{main_assembly_name}/lastal_near_with_masked_mtgenome/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.maf.gz",
     output:
-        "GENOMES/{main_species}/{main_assembly_name}/last_split_near/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.split.maf.gz"
+        temp("GENOMES/{main_species}/{main_assembly_name}/last_split_near/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.split.maf")
     shell:
-        "zcat {input} last-split -r -m1e-5 - | last-postmask | gzip > {output}"
+        "zcat {input} | last-split -r -m1e-5 - | last-postmask > {output}"
 
 rule sort_last_split_near:
     input:
-        "GENOMES/{main_species}/{main_assembly_name}/last_split_near/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.split.maf.gz"
+        "GENOMES/{main_species}/{main_assembly_name}/last_split_near/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.split.maf"
     output:
         "GENOMES/{main_species}/{main_assembly_name}/last_split_near/{other_species}/{other_assembly_name}/{main_assembly_accession}_{other_assembly_accession}.split.sorted.maf"
     shell:
-        "zcat {input} | maf-sort - > {output}"
+        "maf-sort {input} > {output}"
 
 rule maf_join_all_near_split_alignments:
     input:
