@@ -19,6 +19,14 @@ rule bgzip_assembly:
     shell:
         "gunzip -c {input} | bgzip > {output}"
 
+#rule temporarily_extract_genome:
+#    input:
+#        "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
+#    output:
+#        temp("GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna"),
+#    shell:
+#        "bgzip -d {input} -c > {output}"
+
 rule download_assembly_report:
     output:
         temp("GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_assembly_report_to_uncomment.txt")

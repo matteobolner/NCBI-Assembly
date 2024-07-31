@@ -1,3 +1,20 @@
+rule bwa_mem_2_index:
+    input:
+        "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
+    output:
+        multiext("GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna",
+        ".0123",
+        ".amb",
+        ".ann",
+        ".bwt.2bit.64",
+        ".pac")
+    log:
+        "logs/bwa-mem2_index/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}.log",
+    resources:
+        mem_mb=90000
+    wrapper:
+        "v3.13.8/bio/bwa-mem2/index"
+
 rule miniprot_index:
     input:
         "GENOMES/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz"
