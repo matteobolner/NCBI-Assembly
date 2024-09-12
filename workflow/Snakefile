@@ -1,4 +1,4 @@
-import workflow.scripts.assembled_genomes_setup.NCBI_Tools as NCBI_Tools
+import scripts.assembled_genomes_setup.NCBI_Tools as NCBI_Tools
 
 
 include: "rules/common.smk"
