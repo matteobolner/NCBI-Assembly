@@ -1,10 +1,11 @@
+import workflow.scripts.assembled_genomes_setup.NCBI_Tools as NCBI_Tools
+
+
 include: "rules/common.smk"
 include: "rules/download_and_prepare_assemblies.smk"
 include: "rules/prepare_dbs_and_indexes.smk"
 include: "rules/genome_alignment.smk"
 
-
-import workflow.scripts.assembled_genomes_setup.NCBI_Tools as NCBI_Tools
 
 
 rule all:
