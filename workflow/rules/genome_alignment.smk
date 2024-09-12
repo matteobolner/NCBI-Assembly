@@ -1,15 +1,3 @@
-"""
-rule nucmer_test:
-    input:
-        qry="GENOMES/Sus_scrofa/ASM764409v1/ncbi/chr10.fna",
-    output:
-        "test/last.maf"
-    threads:
-        4
-    shell:
-        "lastal -E0.05 -C2 --split-f=MAF+ -P {threads} -p /lustre/home/bolner/data/GENOMES/Sus_scrofa/Sscrofa11.1/last_train/Sus_scrofa/ASM764409v1/GCF_000003025.6_GCA_007644095.1.train /lustre/home/bolner/data/GENOMES/Sus_scrofa/Sscrofa11.1/lastdb_near/GCF_000003025.6_Sscrofa11.1_genomic_masked_mtgenome {input.qry} > {output}"
-"""
-
 rule ragtag_correct:
     input:
         main_genome="GENOMES/{main_species}/{main_assembly_name}/ncbi/{main_assembly_accession}_{main_assembly_name}_genomic_masked_mtgenome.fna.gz",
