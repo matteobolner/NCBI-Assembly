@@ -1,6 +1,3 @@
-import scripts.assembled_genomes_setup.NCBI_Tools as NCBI_Tools
-
-
 rule download_assembly:
     output:
         temp("{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_to_bgzip.fna.gz"),

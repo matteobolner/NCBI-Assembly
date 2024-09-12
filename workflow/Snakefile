@@ -4,9 +4,8 @@ include: "rules/prepare_dbs_and_indexes.smk"
 include: "rules/genome_alignment.smk"
 
 
-# include: "rules/igf2_pangene.smk"
+import workflow.scripts.assembled_genomes_setup.NCBI_Tools as NCBI_Tools
 
 
 rule all:
     input:
-        
