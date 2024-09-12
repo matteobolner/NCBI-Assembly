@@ -1,4 +1,4 @@
-import scripts.assembled_{genomes_folder}_setup.NCBI_Tools as NCBI_Tools
+import scripts.assembled_genomes_setup.NCBI_Tools as NCBI_Tools
 
 
 rule download_assembly:
