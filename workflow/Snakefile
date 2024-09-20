@@ -4,6 +4,6 @@ include: "rules/prepare_dbs_and_indexes.smk"
 include: "rules/genome_alignment.smk"
 
 
-
 rule all:
     input:
+        "",

@@ -2,36 +2,40 @@ rule bwa_mem_2_index:
     input:
         "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
     output:
-        multiext("{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna",
-        ".0123",
-        ".amb",
-        ".ann",
-        ".bwt.2bit.64",
-        ".pac")
+        multiext(
+            "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna",
+            ".0123",
+            ".amb",
+            ".ann",
+            ".bwt.2bit.64",
+            ".pac",
+        ),
     log:
-        "logs/bwa-mem2_index/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}.log",
+        "logs/bwa-mem2_index/{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}.log",
     resources:
-        mem_mb=90000
+        mem_mb=90000,
     wrapper:
         "v3.13.8/bio/bwa-mem2/index"
 
+
 rule miniprot_index:
     input:
-        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz"
+        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
     output:
-        "{genomes_folder}/{species}/{assembly_name}/miniprot/{assembly_accession}_{assembly_name}_genomic.mpi"
-    threads:
-        4
+        "{genomes_folder}/{species}/{assembly_name}/miniprot/{assembly_accession}_{assembly_name}_genomic.mpi",
+    threads: 4
     shell:
         "miniprot -t{threads} -d {output} {input}"
 
+
 rule get_genome_dict:
     input:
-        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz"
+        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
     output:
-        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.dict"
+        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.dict",
     shell:
         "samtools dict {input} > {output}"
+
 
 #########################################################################################################################################################
 
@@ -40,43 +44,59 @@ rule get_genome_dict:
 MTGENOME MASKING - FOR NUMTS
 """
 
+
 rule get_mtc_sequences_from_assembly_reports:
     input:
-        reports=expand("{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_assembly_report.tsv", zip, species=genomes['Species'], assembly_name=genomes['Assembly Name'], assembly_accession=genomes['Assembly Accession']),
-        genomes="config/genomes.tsv"
+        reports=expand(
+            "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_assembly_report.tsv",
+            zip,
+            species=genomes["Species"],
+            assembly_name=genomes["Assembly Name"],
+            assembly_accession=genomes["Assembly Accession"],
+        ),
+        genomes="config/genomes.tsv",
     output:
         "STATS/assembly_setup/mtc_scaffolds.tsv",
-        "STATS/assembly_setup/mtc_scaffolds.bed"
+        "STATS/assembly_setup/mtc_scaffolds.bed",
     script:
         "../scripts/assembled_genomes_setup/get_mtgenome_scaffolds_from_assembly_reports.py"
 
+
 rule gunzip_genome_for_maskfasta:
     input:
-        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz"
+        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
     output:
-        temp("{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna")
+        temp(
+            "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna"
+        ),
     threads: 1
     shell:
         "zcat {input} > {output}"
 
+
 rule mask_mtc_sequences_in_assembly:
     input:
         fasta="{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna",
-        bed="STATS/assembly_setup/mtc_scaffolds.bed"
+        bed="STATS/assembly_setup/mtc_scaffolds.bed",
     output:
-        temp("{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna")
+        temp(
+            "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna"
+        ),
     threads: 1
     shell:
         "bedtools maskfasta -fi {input.fasta} -bed {input.bed} -fo {output} "
 
+
 rule bgzip_masked_genome:
     input:
-        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna"
+        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna",
     output:
-        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna.gz"
+        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_masked_mtgenome.fna.gz",
     threads: 4
     shell:
         "bgzip {input}"
+
+
 ##########################################################################################################################################################
 
 
@@ -155,14 +175,16 @@ rule lastdb_reference_for_distant_orthology:
     input:
         "{genomes_folder}/{species}/{ref_assembly_name}/ncbi/{ref_assembly_accession}_{ref_assembly_name}_genomic_masked_mtgenome.fna.gz",
     output:
-        protected(multiext(
-            "{genomes_folder}/{species}/{ref_assembly_name}/lastdb_distant/{ref_assembly_accession}_{ref_assembly_name}_genomic_masked_mtgenome",
-            ".des",
-            ".prj",
-            ".sds",
-            ".ssp",
-            ".tis",
-        )),
+        protected(
+            multiext(
+                "{genomes_folder}/{species}/{ref_assembly_name}/lastdb_distant/{ref_assembly_accession}_{ref_assembly_name}_genomic_masked_mtgenome",
+                ".des",
+                ".prj",
+                ".sds",
+                ".ssp",
+                ".tis",
+            )
+        ),
     params:
         species=lambda wc: wc.species,
         assembly_name=lambda wc: wc.ref_assembly_name,
@@ -171,6 +193,7 @@ rule lastdb_reference_for_distant_orthology:
     threads: 16
     shell:
         "zcat {input} | lastdb -P {threads} -uMAM8 {params.db_name}"
+
 
 rule minimap2_index_assembly:
     input:
