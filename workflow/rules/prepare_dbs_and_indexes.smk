@@ -1,3 +1,5 @@
+
+
 rule bwa_mem_2_index:
     input:
         "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
@@ -35,6 +37,16 @@ rule get_genome_dict:
         "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.dict",
     shell:
         "samtools dict {input} > {output}"
+
+
+rule get_genome_fai:
+    input:
+        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz",
+    output:
+        "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.fai",
+    shell:
+        "samtools faidx {input} > {output}"
+
 
 
 #########################################################################################################################################################
