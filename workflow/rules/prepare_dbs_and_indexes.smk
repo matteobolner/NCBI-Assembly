@@ -45,7 +45,7 @@ rule get_genome_fai:
     output:
         "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.fai",
     shell:
-        "samtools faidx {input} > {output}"
+        "samtools faidx {input} -o {output}"
 
 
 
