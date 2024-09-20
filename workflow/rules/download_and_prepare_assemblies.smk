@@ -1,6 +1,6 @@
 rule download_assembly:
     output:
-        temp("{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic_to_bgzip.fna.gz"),
+        temp("{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_genomic.fna.gz"),
     shell:
         "genomers -a {wildcards.assembly_accession} -n {wildcards.assembly_name} -g  | gunzip -c | bgzip > {output} "
 
