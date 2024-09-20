@@ -48,7 +48,7 @@ MTGENOME MASKING - FOR NUMTS
 rule get_mtc_sequences_from_assembly_reports:
     input:
         reports=expand(
-            "{genomes_folder}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_assembly_report.tsv",
+            "{{genomes_folder}}/{species}/{assembly_name}/ncbi/{assembly_accession}_{assembly_name}_assembly_report.tsv",
             zip,
             species=genomes["Species"],
             assembly_name=genomes["Assembly Name"],
